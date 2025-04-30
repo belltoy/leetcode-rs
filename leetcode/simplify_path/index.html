@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="71. 简化路径"><title>leetcode::simplify_path - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="leetcode" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../leetcode/index.html">leetcode</a><span class="version">0.1.0</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Module simplify_<wbr>path</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#71-简化路径" title="71. 简化路径">71. 简化路径</a><ul><li><a href="#示例-1" title="示例 1：">示例 1：</a></li><li><a href="#示例-2" title="示例 2：">示例 2：</a></li><li><a href="#示例-3" title="示例 3：">示例 3：</a></li><li><a href="#示例-4" title="示例 4：">示例 4：</a></li><li><a href="#示例-5" title="示例 5：">示例 5：</a></li><li><a href="#示例-6" title="示例 6：">示例 6：</a></li></ul></li></ul><h3><a href="#structs">Module Items</a></h3><ul class="block"><li><a href="#structs" title="Structs">Structs</a></li></ul></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="../index.html">In crate leetcode</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="../index.html">leetcode</a></div><h1>Module <span>simplify_path</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/leetcode/simplify_path.rs.html#1-108">Source</a> </span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="71-简化路径"><a class="doc-anchor" href="#71-简化路径">§</a>71. 简化路径</h2>
+<p>难度 中等</p>
+<p>以 Unix 风格给出一个文件的绝对路径，你需要简化它。或者换句话说，将其转换为规范路径。</p>
+<p>在 Unix 风格的文件系统中，一个点（.）表示当前目录本身；此外，两个点 （..） 表示
+将目录切换到上一级（指向父目录）；两者都可以是复杂相对路径的组成部分。
+更多信息请参阅：<a href="https://blog.csdn.net/u011327334/article/details/50355600">Linux / Unix中的绝对路径 vs 相对路径</a></p>
+<p>请注意，返回的规范路径必须始终以斜杠 / 开头，并且两个目录名之间必须只有一个斜杠 /。
+最后一个目录名（如果存在）<strong>不能</strong>以 / 结尾。此外，规范路径必须是表示绝对路径的<strong>最短</strong>字符串。</p>
+<h3 id="示例-1"><a class="doc-anchor" href="#示例-1">§</a>示例 1：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/home/"
+/// 输出："/home"
+/// 解释：注意，最后一个目录名后面没有斜杠。
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/home"</span>, Solution::simplify_path(<span class="string">"/home/"</span>.into()));</code></pre></div>
+<h3 id="示例-2"><a class="doc-anchor" href="#示例-2">§</a>示例 2：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/../"
+/// 输出："/"
+/// 解释：从根目录向上一级是不可行的，因为根是你可以到达的最高级。
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/"</span>, Solution::simplify_path(<span class="string">"/../"</span>.into()));</code></pre></div>
+<h3 id="示例-3"><a class="doc-anchor" href="#示例-3">§</a>示例 3：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/home//foo/"
+/// 输出："/home/foo"
+/// 解释：在规范路径中，多个连续斜杠需要用一个斜杠替换。
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/home/foo"</span>, Solution::simplify_path(<span class="string">"/home//foo/"</span>.into()));</code></pre></div>
+<h3 id="示例-4"><a class="doc-anchor" href="#示例-4">§</a>示例 4：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/a/./b/../../c/"
+/// 输出："/c"
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/c"</span>, Solution::simplify_path(<span class="string">"/a/./b/../../c/"</span>.into()));</code></pre></div>
+<h3 id="示例-5"><a class="doc-anchor" href="#示例-5">§</a>示例 5：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/a/../../b/../c//.//"
+/// 输出："/c"
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/c"</span>, Solution::simplify_path(<span class="string">"/a/../../b/../c//.//"</span>.into()));</code></pre></div>
+<h3 id="示例-6"><a class="doc-anchor" href="#示例-6">§</a>示例 6：</h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// 输入："/a//b////c/d//././/.."
+/// 输出："/a/b/c"
+</span><span class="kw">use </span>leetcode::simplify_path::Solution;
+<span class="macro">assert_eq!</span>(<span class="string">"/a/b/c"</span>, Solution::simplify_path(<span class="string">"/a//b////c/d//././/.."</span>.into()));</code></pre></div>
+<p>See <a href="https://leetcode-cn.com/problems/simplify-path/">leetcode</a></p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><dl class="item-table"><dt><a class="struct" href="struct.Solution.html" title="struct leetcode::simplify_path::Solution">Solution</a></dt></dl></section></div></main></body></html>

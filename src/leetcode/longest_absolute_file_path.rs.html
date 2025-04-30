@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/longest_absolute_file_path.rs`."><title>longest_absolute_file_path.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-6c3ea77c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="leetcode" data-themes="" data-resource-suffix="" data-rustdoc-version="1.86.0 (05f9846f8 2025-03-31)" data-channel="1.86.0" data-search-js="search-581efc7a.js" data-settings-js="settings-6dad6058.js" ><script src="../../static.files/storage-3a5871a4.js"></script><script defer src="../../static.files/src-script-b8d3f215.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-4d63596a.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">leetcode/</div>longest_absolute_file_path.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! # 388. 文件的最长绝对路径
+<a href=#2 id=2 data-nosnippet>2</a>//!
+<a href=#3 id=3 data-nosnippet>3</a>//! 难度 中等
+<a href=#4 id=4 data-nosnippet>4</a>//!
+<a href=#5 id=5 data-nosnippet>5</a>//! 假设文件系统如下图所示：![](https://assets.leetcode.com/uploads/2020/08/28/mdir.jpg)
+<a href=#6 id=6 data-nosnippet>6</a>//!
+<a href=#7 id=7 data-nosnippet>7</a>//!
+<a href=#8 id=8 data-nosnippet>8</a>//! 这里将 `dir` 作为根目录中的唯一目录。`dir` 包含两个子目录 `subdir1` 和 `subdir2` 。`subdir1` 包含文件 `file1.ext` 和子目录 `subsubdir1`；`subdir2` 包含子目录 `subsubdir2`，该子目录下包含文件 `file2.ext` 。
+<a href=#9 id=9 data-nosnippet>9</a>//!
+<a href=#10 id=10 data-nosnippet>10</a>//! 在文本格式中，如下所示(⟶表示制表符)：
+<a href=#11 id=11 data-nosnippet>11</a>//!
+<a href=#12 id=12 data-nosnippet>12</a>//! ```text
+<a href=#13 id=13 data-nosnippet>13</a>//! dir
+<a href=#14 id=14 data-nosnippet>14</a>//! ⟶ subdir1
+<a href=#15 id=15 data-nosnippet>15</a>//! ⟶ ⟶ file1.ext
+<a href=#16 id=16 data-nosnippet>16</a>//! ⟶ ⟶ subsubdir1
+<a href=#17 id=17 data-nosnippet>17</a>//! ⟶ subdir2
+<a href=#18 id=18 data-nosnippet>18</a>//! ⟶ ⟶ subsubdir2
+<a href=#19 id=19 data-nosnippet>19</a>//! ⟶ ⟶ ⟶ file2.ext
+<a href=#20 id=20 data-nosnippet>20</a>//! ```
+<a href=#21 id=21 data-nosnippet>21</a>//! 如果是代码表示，上面的文件系统可以写为 `"dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"` 。`'\n'` 和 `'\t'` 分别是换行符和制表符。
+<a href=#22 id=22 data-nosnippet>22</a>//!
+<a href=#23 id=23 data-nosnippet>23</a>//! 文件系统中的每个文件和文件夹都有一个唯一的 绝对路径 ，即必须打开才能到达文件/目录所在位置的目录顺序，所有路径用 `'/'` 连接。上面例子中，指向 `file2.ext` 的绝对路径是 `"dir/subdir2/subsubdir2/file2.ext"` 。每个目录名由字母、数字和/或空格组成，每个文件名遵循 `name.extension` 的格式，其中名称和扩展名由字母、数字和/或空格组成。
+<a href=#24 id=24 data-nosnippet>24</a>//!
+<a href=#25 id=25 data-nosnippet>25</a>//! 给定一个以上述格式表示文件系统的字符串 `input` ，返回文件系统中 **指向文件的最长绝对路径** 的长度。 如果系统中没有文件，返回 `0`。
+<a href=#26 id=26 data-nosnippet>26</a>//!
+<a href=#27 id=27 data-nosnippet>27</a>//!
+<a href=#28 id=28 data-nosnippet>28</a>//! ## 示例 1：
+<a href=#29 id=29 data-nosnippet>29</a>//!
+<a href=#30 id=30 data-nosnippet>30</a>//! ![](https://assets.leetcode.com/uploads/2020/08/28/dir1.jpg)
+<a href=#31 id=31 data-nosnippet>31</a>//!
+<a href=#32 id=32 data-nosnippet>32</a>//! ```text
+<a href=#33 id=33 data-nosnippet>33</a>//! 输入：input = "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext"
+<a href=#34 id=34 data-nosnippet>34</a>//! 输出：20
+<a href=#35 id=35 data-nosnippet>35</a>//! 解释：只有一个文件，绝对路径为 "dir/subdir2/file.ext" ，路径长度 20
+<a href=#36 id=36 data-nosnippet>36</a>//! 路径 "dir/subdir1" 不含任何文件
+<a href=#37 id=37 data-nosnippet>37</a>//! ```
+<a href=#38 id=38 data-nosnippet>38</a>//!
+<a href=#39 id=39 data-nosnippet>39</a>//! ## 示例 2：
+<a href=#40 id=40 data-nosnippet>40</a>//!
+<a href=#41 id=41 data-nosnippet>41</a>//! ![](https://assets.leetcode.com/uploads/2020/08/28/dir2.jpg)
+<a href=#42 id=42 data-nosnippet>42</a>//!
+<a href=#43 id=43 data-nosnippet>43</a>//! ```text
+<a href=#44 id=44 data-nosnippet>44</a>//! 输入：input = "dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"
+<a href=#45 id=45 data-nosnippet>45</a>//! 输出：32
+<a href=#46 id=46 data-nosnippet>46</a>//! 解释：存在两个文件：
+<a href=#47 id=47 data-nosnippet>47</a>//! "dir/subdir1/file1.ext" ，路径长度 21
+<a href=#48 id=48 data-nosnippet>48</a>//! "dir/subdir2/subsubdir2/file2.ext" ，路径长度 32
+<a href=#49 id=49 data-nosnippet>49</a>//! 返回 32 ，因为这是最长的路径
+<a href=#50 id=50 data-nosnippet>50</a>//! ```
+<a href=#51 id=51 data-nosnippet>51</a>//!
+<a href=#52 id=52 data-nosnippet>52</a>//! ## 示例 3：
+<a href=#53 id=53 data-nosnippet>53</a>//!
+<a href=#54 id=54 data-nosnippet>54</a>//! ```text
+<a href=#55 id=55 data-nosnippet>55</a>//! 输入：input = "a"
+<a href=#56 id=56 data-nosnippet>56</a>//! 输出：0
+<a href=#57 id=57 data-nosnippet>57</a>//! 解释：不存在任何文件
+<a href=#58 id=58 data-nosnippet>58</a>//! ```
+<a href=#59 id=59 data-nosnippet>59</a>//!
+<a href=#60 id=60 data-nosnippet>60</a>//! ## 示例 4：
+<a href=#61 id=61 data-nosnippet>61</a>//!
+<a href=#62 id=62 data-nosnippet>62</a>//! ```text
+<a href=#63 id=63 data-nosnippet>63</a>//! 输入：input = "file1.txt\nfile2.txt\nlongfile.txt"
+<a href=#64 id=64 data-nosnippet>64</a>//! 输出：12
+<a href=#65 id=65 data-nosnippet>65</a>//! 解释：根目录下有 3 个文件。
+<a href=#66 id=66 data-nosnippet>66</a>//! 因为根目录中任何东西的绝对路径只是名称本身，所以答案是 "longfile.txt" ，路径长度为 12
+<a href=#67 id=67 data-nosnippet>67</a>//! ```
+<a href=#68 id=68 data-nosnippet>68</a>//!
+<a href=#69 id=69 data-nosnippet>69</a>//! ## 提示：
+<a href=#70 id=70 data-nosnippet>70</a>//!
+<a href=#71 id=71 data-nosnippet>71</a>//! * 1 &lt;= input.length &lt;= 10&lt;sup&gt;4&lt;/sup&gt;
+<a href=#72 id=72 data-nosnippet>72</a>//! * `input` 可能包含小写或大写的英文字母，一个换行符 `'\n'`，一个指表符 `'\t'`，一个点 `'.'`，一个空格 `' '`，和数字。
+<a href=#73 id=73 data-nosnippet>73</a>//!
+<a href=#74 id=74 data-nosnippet>74</a>//! See [leetcode](https://leetcode-cn.com/problems/longest-absolute-file-path/)
+<a href=#75 id=75 data-nosnippet>75</a>
+<a href=#76 id=76 data-nosnippet>76</a></span><span class="kw">pub struct </span>Solution;
+<a href=#77 id=77 data-nosnippet>77</a>
+<a href=#78 id=78 data-nosnippet>78</a><span class="kw">impl </span>Solution {
+<a href=#79 id=79 data-nosnippet>79</a>
+<a href=#80 id=80 data-nosnippet>80</a>    <span class="doccomment">/// 用 Rust 的 `Iterator` 写函数式的解法。
+<a href=#81 id=81 data-nosnippet>81</a>    ///
+<a href=#82 id=82 data-nosnippet>82</a>    /// 先把输入拆分，因为每个片断都包含了文件名，路径深度和目录文件类型，对片断预处理。因为字符串表示是顺序表示的，所以前后之间是需要处理的。详细步骤说明：
+<a href=#83 id=83 data-nosnippet>83</a>    ///
+<a href=#84 id=84 data-nosnippet>84</a>    /// * 按 `\n` 切分输入 `split('\n')`
+<a href=#85 id=85 data-nosnippet>85</a>    /// * 把每个 `\t\tfile_name` 映射成 `(level, file_name_length, is_file)`，这里的 `level` 从 `0` 开始（即根目录 level 为 `0`）
+<a href=#86 id=86 data-nosnippet>86</a>    ///     * 找到第一个不是 `\t` 的字符的位置，position 表示 `\t` 个数，即 level 层级，剩下的即文件名，我们取其长度即可，同时判断是否为文件（文件名中是否带 `.`）
+<a href=#87 id=87 data-nosnippet>87</a>    ///     * 如果没有 `\t` 说明是在根目录下的，即 `level` 为 `0`
+<a href=#88 id=88 data-nosnippet>88</a>    /// * 计算每一个目录/文件名的长度（根据上一步生成的 tuple），因为每次分析都需要用到之前的路径在哪一层，所以需要用到 state 状态（栈），计算结果是每个目录/文件的长度，所以用 `scan`
+<a href=#89 id=89 data-nosnippet>89</a>    ///     * 初始状态是 `[]`，这里的状态表示**上一次**的父目录的绝对路径长度，即 `[level_0_len, level_1_len, level_2_len, ...]`
+<a href=#90 id=90 data-nosnippet>90</a>    ///     * 进入到当前目录/文件，需要弹出上一次的父目录，直到 `parents` 里只剩当前目录/文件的父级（这里用 `split_off(at)` 来简化多次 `pop()`
+<a href=#91 id=91 data-nosnippet>91</a>    ///     * 当前级别的目录/文件的长度就是剩下的 `parents` 里最后一个父目录的绝对路径长度和 + 当前文件名长度
+<a href=#92 id=92 data-nosnippet>92</a>    ///     * 如果当前是目录，则当前目录长度 `push` 入栈，注意需要 `+ 1` 表示算上 `/`
+<a href=#93 id=93 data-nosnippet>93</a>    ///     * `scan` 函数的参数函数里，返回 `(abs_len, is_file`) （注：`scan` 函数相当于是 `fold` + `map`，或者说 `map` 带了个 state 状态）
+<a href=#94 id=94 data-nosnippet>94</a>    /// * 经过上一步，转换的结果已经变成 `(abs_len, is_file)` 了，只要过滤掉不是文件的项
+<a href=#95 id=95 data-nosnippet>95</a>    /// * 然后找出 `max` 就是结果了
+<a href=#96 id=96 data-nosnippet>96</a>    ///
+<a href=#97 id=97 data-nosnippet>97</a>    /// 这里除了 `scan` 中每一步过程中需要更新 `parents` 这个状态，其它地方没有任何的 mutable 变量。函数式编程的方式逻辑非常清晰，代码写起来也非常方便，可读性高，加上 immutable 使得安全性也非常好。关键是在 Rust 里用函数式的方法几乎不损失性能。
+<a href=#98 id=98 data-nosnippet>98</a>    </span><span class="kw">pub fn </span>length_longest_path(input: String) -&gt; i32 {
+<a href=#99 id=99 data-nosnippet>99</a>        input
+<a href=#100 id=100 data-nosnippet>100</a>            .split(<span class="string">'\n'</span>)
+<a href=#101 id=101 data-nosnippet>101</a>            .map(|s| {
+<a href=#102 id=102 data-nosnippet>102</a>                s.find(|c| c != <span class="string">'\t'</span>)
+<a href=#103 id=103 data-nosnippet>103</a>                .map(|n| (n, s.len() - n, (<span class="kw-2">&amp;</span>s[n..]).chars().any(|c| c == <span class="string">'.'</span>)))
+<a href=#104 id=104 data-nosnippet>104</a>                .unwrap_or_else(|| (<span class="number">0</span>, s.len(), s.chars().any(|c| c == <span class="string">'.'</span>)))
+<a href=#105 id=105 data-nosnippet>105</a>            })
+<a href=#106 id=106 data-nosnippet>106</a>            .scan(<span class="macro">vec!</span>[], |parents, (level, s_len, is_file)| {
+<a href=#107 id=107 data-nosnippet>107</a>                <span class="kw">if </span>level &lt; parents.len() {
+<a href=#108 id=108 data-nosnippet>108</a>                    <span class="kw">let _ </span>= parents.split_off(level); <span class="comment">// pop until parent level
+<a href=#109 id=109 data-nosnippet>109</a>                </span>}
+<a href=#110 id=110 data-nosnippet>110</a>
+<a href=#111 id=111 data-nosnippet>111</a>                <span class="kw">let </span>abs_len = s_len + parents.last().unwrap_or(<span class="kw-2">&amp;</span><span class="number">0</span>);
+<a href=#112 id=112 data-nosnippet>112</a>
+<a href=#113 id=113 data-nosnippet>113</a>                <span class="kw">if </span>!is_file {
+<a href=#114 id=114 data-nosnippet>114</a>                    parents.push(abs_len + <span class="number">1</span>);
+<a href=#115 id=115 data-nosnippet>115</a>                }
+<a href=#116 id=116 data-nosnippet>116</a>
+<a href=#117 id=117 data-nosnippet>117</a>                <span class="prelude-val">Some</span>((abs_len, is_file))
+<a href=#118 id=118 data-nosnippet>118</a>            })
+<a href=#119 id=119 data-nosnippet>119</a>            .filter(|(<span class="kw">_</span>, is_file)| <span class="kw-2">*</span>is_file)
+<a href=#120 id=120 data-nosnippet>120</a>            .map(|(n, <span class="kw">_</span>)| n)
+<a href=#121 id=121 data-nosnippet>121</a>            .max()
+<a href=#122 id=122 data-nosnippet>122</a>            .unwrap_or(<span class="number">0</span>) <span class="kw">as </span>i32
+<a href=#123 id=123 data-nosnippet>123</a>    }
+<a href=#124 id=124 data-nosnippet>124</a>}
+<a href=#125 id=125 data-nosnippet>125</a>
+<a href=#126 id=126 data-nosnippet>126</a><span class="attr">#[cfg(test)]
+<a href=#127 id=127 data-nosnippet>127</a></span><span class="kw">mod </span>tests {
+<a href=#128 id=128 data-nosnippet>128</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#129 id=129 data-nosnippet>129</a>
+<a href=#130 id=130 data-nosnippet>130</a>    <span class="attr">#[test]
+<a href=#131 id=131 data-nosnippet>131</a>    </span><span class="kw">fn </span>test() {
+<a href=#132 id=132 data-nosnippet>132</a>        <span class="kw">let </span>cases = <span class="macro">vec!</span>[
+<a href=#133 id=133 data-nosnippet>133</a>            (<span class="number">20</span>, <span class="string">"dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext"</span>),
+<a href=#134 id=134 data-nosnippet>134</a>            (<span class="number">32</span>, <span class="string">"dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"</span>),
+<a href=#135 id=135 data-nosnippet>135</a>            (<span class="number">0</span>, <span class="string">"a"</span>),
+<a href=#136 id=136 data-nosnippet>136</a>            (<span class="number">5</span>, <span class="string">"a.txt"</span>),
+<a href=#137 id=137 data-nosnippet>137</a>            (<span class="number">5</span>, <span class="string">"b.t\na.txt"</span>),
+<a href=#138 id=138 data-nosnippet>138</a>            (<span class="number">12</span>, <span class="string">"file1.txt\nfile2.txt\nlongfile.txt"</span>),
+<a href=#139 id=139 data-nosnippet>139</a>            (<span class="number">16</span>, <span class="string">"dir\n        file.txt"</span>),
+<a href=#140 id=140 data-nosnippet>140</a>            (<span class="number">14</span>, <span class="string">"a\n\tb1\n\t\tf1.txt\n\taaaaa\n\t\tf2.txt"</span>),
+<a href=#141 id=141 data-nosnippet>141</a>            (<span class="number">29</span>, <span class="string">"a\n\taa\n\t\taaa\n\t\t\tfile1.txt\naaaaaaaaaaaaaaaaaaaaa\n\tsth.png"</span>),
+<a href=#142 id=142 data-nosnippet>142</a>            (<span class="number">10</span>, <span class="string">"a\n\tb\n\t\tc.txt\n\taaaa.txt"</span>),
+<a href=#143 id=143 data-nosnippet>143</a>        ];
+<a href=#144 id=144 data-nosnippet>144</a>
+<a href=#145 id=145 data-nosnippet>145</a>        <span class="kw">for </span>(expect, input) <span class="kw">in </span>cases {
+<a href=#146 id=146 data-nosnippet>146</a>            <span class="macro">assert_eq!</span>(expect, Solution::length_longest_path(input.into()));
+<a href=#147 id=147 data-nosnippet>147</a>        }
+<a href=#148 id=148 data-nosnippet>148</a>    }
+<a href=#149 id=149 data-nosnippet>149</a>}</code></pre></div></section></main></body></html>
