@@ -20,18 +20,17 @@
 pub struct Solution;
 
 impl Solution {
-    /// 利用 `try_fold` 的 short-circuiting，根据题目的设定，会有一个答案，找到就利用
-    /// `Err(T)` 提早返回，把结果放在 `T` 中。如果没有，返回 `vec![]`
     pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-        let state = std::collections::HashMap::with_capacity(nums.len());
-        nums.iter().enumerate().try_fold(state, |mut state, (i, n)| {
-            state.get(&(target - n)).and_then(|&v| match v {
-                v if v != i => Err(vec![v as i32, i as i32]).into(),
-                _ => Ok(()).into()
-            }).unwrap_or(Ok(()))?;
+        let mut state = std::collections::HashMap::with_capacity(nums.len());
+        for (i, n) in nums.iter().enumerate() {
+            if let Some(&v) = state.get(&(target - n)) {
+                if v != i {
+                    return vec![v as i32, i as i32];
+                }
+            }
             state.insert(n, i);
-            Ok(state)
-        }).err().unwrap_or(vec![])
+        }
+        vec![]
     }
 }
 

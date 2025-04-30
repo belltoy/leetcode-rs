@@ -55,7 +55,7 @@ impl Solution {
         }
 
         let rest = (p2 + 1) as usize;
-        &mut nums1[..rest].copy_from_slice(&nums2[..rest]);
+        let _ = &mut nums1[..rest].copy_from_slice(&nums2[..rest]);
     }
 }
 

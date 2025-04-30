@@ -25,35 +25,36 @@ pub struct Solution;
 use crate::ListNode;
 
 impl Solution {
-
-    /// 双指针/快慢指针
     pub fn remove_nth_from_end(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
-        if n <= 0 {
-            return head;
-        }
+        Self::unsafe_version(head, n)
+    }
 
-        let dummy = Some(Box::new(ListNode {
+    fn unsafe_version(head: Option<Box<ListNode>>, n: i32) -> Option<Box<ListNode>> {
+        assert!(n > 0);
+
+        let mut dummy = Box::new(ListNode {
             next: head,
             val: 0,
-        }));
-        let mut fast = &dummy;
-        let mut slow = &dummy;
-        for _ in 0..=n {
-            fast = &fast.as_ref().unwrap().next;
-        }
+        });
 
-        while fast.is_some() {
-            slow = &slow.as_ref().unwrap().next;
-            fast = &fast.as_ref().unwrap().next;
-        }
-
-        let p = slow as *const _ as *mut Option<Box<ListNode>>;
-        unsafe {
-            if let Some(node) = &mut *p {
-                node.next = node.next.take().unwrap().next;  // slow won't be the last node as n > 0
+        let mut fast = &(*dummy) as *const ListNode;
+        for _ in 0..n {
+            unsafe {
+                fast = (*fast).next.as_deref()?;
             }
         }
-        dummy.unwrap().next
+
+        let mut slow = &mut (*dummy) as *mut ListNode;
+        unsafe {
+            while let Some(f) = (*fast).next.as_deref() {
+                fast = f;
+                slow = (*slow).next.as_deref_mut().unwrap();
+            }
+            let to_delete = (*slow).next.take().unwrap();
+            (*slow).next = to_delete.next;
+        }
+
+        dummy.next
     }
 }
 
@@ -70,7 +71,7 @@ mod tests {
             (vec![2,3,4,5], (list![1,2,3,4,5], 5)),
 
             // invalid n = 0
-            (vec![1,2,3,4,5], (list![1,2,3,4,5], 0)),
+            // (vec![1,2,3,4,5], (list![1,2,3,4,5], 0)),
         ];
         let t = |v, n| ListNode::into_vec(Solution::remove_nth_from_end(v, n));
         for (expect, (input, val)) in cases {

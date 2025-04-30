@@ -55,3 +55,8 @@ pub mod minimum_path_sum;
 pub mod longest_absolute_file_path;
 pub mod number_of_good_pairs;
 pub mod max_sliding_window;
+pub mod longest_substring_without_repeating_characters;
+pub mod basic_calculator_ii;
+pub mod swap_nodes_in_pairs;
+pub mod search_a_2d_matrix;
+pub mod search_a_2d_matrix_ii;

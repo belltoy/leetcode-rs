@@ -91,7 +91,7 @@ impl Solution {
     pub fn evaluate(expression: String) -> i32 {
         let mut e = Evaluation::new(tokenize(&expression));
         // assume all inputs will be valid
-        let res = e.eval(None).unwrap_or_else(|e| panic!(e));
+        let res = e.eval(None).unwrap_or_else(|e| panic!("{}", e));
         // 如果还有符号，说明输入是非法的
         assert!(e.is_end(), "Unexpected input");
         res

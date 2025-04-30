@@ -35,32 +35,21 @@ use crate::ListNode;
 
 /// 快慢指针
 ///
-/// 但 Rust 中对于一个值不能有两个 mut 的引用，所以可以裸指针。
-///
-/// 因为在一个函数里操作，可以保证是安全的。
+/// <del>但 Rust 中对于一个值不能有两个 mut 的引用，所以可以裸指针。 因为在一个函数里操作，可以保证是安全的。</del>
+/// 这里返回可以 Clone...
 pub struct Solution;
 
 impl Solution {
 
     pub fn middle_node(head: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
-        let mut dummy = Box::new(ListNode {
-            val: 0,
-            next: head,
-        });
+        let mut slow = &head;
+        let mut fast = &head;
 
-        // to prevent unecessary clone, use raw pointers here
-        let mut slow: *mut _ = &mut dummy.next;
-        let mut fast: *const _ = &dummy.next;
-        let mut slow_prev: *mut _ = &mut dummy;
-
-        unsafe {
-            while (*fast).is_some() && (*fast).as_ref().unwrap().next.is_some() {
-                fast = &(*fast).as_ref().unwrap().next.as_ref().unwrap().next;
-                slow_prev = &mut *(*slow).as_mut().unwrap();
-                slow = &mut (*slow).as_mut().unwrap().next;
-            }
-            (*slow_prev).next.take()
+        while fast.is_some() && fast.as_ref().unwrap().next.is_some() {
+            slow = &slow.as_ref().unwrap().next;
+            fast = &fast.as_ref().unwrap().next.as_ref().unwrap().next;
         }
+        slow.clone()
     }
 }
 
@@ -74,6 +63,7 @@ mod tests {
         let t = |v| ListNode::into_vec(Solution::middle_node(v));
         assert_eq!(vec![3,4,5], t(list![1,2,3,4,5]));
         assert_eq!(vec![4,5,6], t(list![1,2,3,4,5,6]));
+        assert_eq!(vec![2], t(list![2]));
         assert_eq!(vec![0i32;0], t(list![]));
     }
 }
